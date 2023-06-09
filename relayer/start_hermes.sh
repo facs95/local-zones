@@ -1,5 +1,7 @@
 #!/bin/bash
-RELAYER_CONFIG=/root/.hermes/config.toml
+DOCKERNET_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+RELAYER_CONFIG=$DOCKERNET_HOME/hermes_config.toml
+
 EVMOS_CHAINID="evmos_9000-1"
 STRIDE_CHAINID="STRIDE"
 

@@ -59,11 +59,10 @@ services:
         dockerfile: relayer/Dockerfile
         args:
           commit_hash: v1.5.1
-      environment:
-        WAIT_HOSTS: evmosd:26657, strided:9090, evmosd:9090, strided:26657
-        WAIT_AFTER: 20
-      command: bash -c "/root/wait && /root/hermes.sh"
-
+      depends_on:
+        - evmos
+        - stride
+      command: bash -c "/root/wait && /root/start_hermes.sh"
 networks:
   localnet:
     driver: bridge

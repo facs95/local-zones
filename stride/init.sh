@@ -60,8 +60,8 @@ INITIAL_ANNUAL_PROVISIONS="10000000000000.000000000000000000"
 
 
 # relayer
-RELAYER_EVMOS_ACCT=rly7
-RELAYER_EVMOS_MNEMONIC="science depart where tell bus ski laptop follow child bronze rebel recall brief plug razor ship degree labor human series today embody fury harvest"
+RELAYER_STRIDE_ACCT=rly7
+RELAYER_STRIDE_MNEMONIC="science depart where tell bus ski laptop follow child bronze rebel recall brief plug razor ship degree labor human series today embody fury harvest"
 
 
 # Node names will be of the form: "stride1"
@@ -123,8 +123,8 @@ sed -i -E "s|node = \".*\"|node = \"tcp://localhost:$RPC_PORT\"|g" $client_toml
 sed -i -E "s|\"stake\"|\"${DENOM}\"|g" $genesis_json
 sed -i -E "s|\"aphoton\"|\"${DENOM}\"|g" $genesis_json # ethermint default
 
-RELAYER_ACCT=$RELAYER_EVMOS_ACCT
-RELAYER_MNEMONIC=$RELAYER_EVMOS_MNEMONIC
+RELAYER_ACCT=$RELAYER_STRIDE_ACCT
+RELAYER_MNEMONIC=$RELAYER_STRIDE_MNEMONIC
 
 echo "$RELAYER_MNEMONIC" | $cmd keys add $RELAYER_ACCT --recover --keyring-backend=test >> $KEYS_LOGS 2>&1
 RELAYER_ADDRESS=$($cmd keys show $RELAYER_ACCT --keyring-backend test -a)
