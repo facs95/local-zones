@@ -1,0 +1,67 @@
+[global]
+log_level = 'trace'
+
+[mode]
+
+[mode.clients]
+enabled = true
+refresh = true
+misbehaviour = true
+
+[mode.connections]
+enabled = false
+
+[mode.channels]
+enabled = false
+
+[mode.packets]
+enabled = true
+clear_interval = 100
+clear_on_start = true
+tx_confirmation = true
+
+[rest]
+enabled = true
+host = '127.0.0.1'
+port = 3000
+
+[telemetry]
+enabled = true
+host = '127.0.0.1'
+port = 3001
+
+[[chains]]
+id = 'evmos_9001-1'
+rpc_addr = 'http://172.16.99.4:26657'
+grpc_addr = 'http://172.16.99.4:9090'
+websocket_addr = 'ws://172.16.99.3:26657/websocket'
+rpc_timeout = '10s'
+account_prefix = 'evmos'
+key_name = 'mykey'
+store_prefix = 'ibc'
+default_gas = 100000
+max_gas = 3000000
+gas_price = { price = 0.0001, denom = 'aevmos' }
+clock_drift = '15s'
+max_block_time = '10s'
+trusting_period = '14days'
+trust_threshold = { numerator = '1', denominator = '3' }
+address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
+
+[[chains]]
+id = 'STRIDE'
+rpc_addr = 'http://172.16.99.3:26657'
+grpc_addr = 'http://172.16.99.3:9090'
+websocket_addr = 'ws://172.16.99.3:26657/websocket'
+rpc_timeout = '10s'
+account_prefix = 'ustrd'
+key_name = 'mykey'
+store_prefix = 'ibc'
+default_gas = 100000
+max_gas = 3000000
+gas_price = { price = 0.0001, denom = 'aevmos' }
+clock_drift = '15s'
+max_block_time = '10s'
+trusting_period = '14days'
+trust_threshold = { numerator = '1', denominator = '3' }
+
