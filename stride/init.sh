@@ -61,7 +61,7 @@ INITIAL_ANNUAL_PROVISIONS="10000000000000.000000000000000000"
 
 # relayer
 RELAYER_STRIDE_ACCT=rly7
-RELAYER_STRIDE_MNEMONIC="science depart where tell bus ski laptop follow child bronze rebel recall brief plug razor ship degree labor human series today embody fury harvest"
+RELAYER_STRIDE_MNEMONIC="flush affair switch actual monkey guilt flip excuse luxury spike deputy outside business wood reward thunder trust system echo abuse fantasy derive gorilla design"
 
 
 # Node names will be of the form: "stride1"
@@ -92,7 +92,7 @@ STAKE_TOKENS=${STAKE_TOKENS}${MICRO_DENOM_UNITS}
 DEV_ADDR_1="stride1j7uu8nqc9vdstnd3wj0nuasddv90z5ejnucq0k"
 DEV_ADDRS=("$DEV_ADDR_1")
 
-DEV_AMOUNT=5000000
+DEV_AMOUNT=50000000
 DEV_AMOUNT=${DEV_AMOUNT}${MICRO_DENOM_UNITS}
 
 

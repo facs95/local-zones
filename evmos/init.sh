@@ -60,7 +60,7 @@ INITIAL_ANNUAL_PROVISIONS="10000000000000.000000000000000000"
 
 # relayer
 RELAYER_EVMOS_ACCT=rly7
-RELAYER_EVMOS_MNEMONIC="science depart where tell bus ski laptop follow child bronze rebel recall brief plug razor ship degree labor human series today embody fury harvest"
+RELAYER_EVMOS_MNEMONIC="flush affair switch actual monkey guilt flip excuse luxury spike deputy outside business wood reward thunder trust system echo abuse fantasy derive gorilla design"
 
 
 # Node names will be of the form: "evmos1"
