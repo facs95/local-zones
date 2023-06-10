@@ -23,6 +23,7 @@ RUN apt update -y && apt install jq bc -y
 COPY --from=build-env /go/src/github.com/evmos/evmos/build/evmosd .
 
 COPY evmos/init.sh .
+COPY config.sh .
 RUN chmod +x *.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]

@@ -1,5 +1,9 @@
 # Your LOCAL map of zones
 
+## Add accounts
+
+In order to add accounts to the genesis file of each chain for them to be funded, you need to add them to the `./config.sh` file.
+
 ## How to run
 
 `docker-compose build`

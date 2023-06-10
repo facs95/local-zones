@@ -4,6 +4,8 @@ set -eu
 # get current directory
 DOCKERNET_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+source $DOCKERNET_HOME/config.sh
+
 STATE=$DOCKERNET_HOME/state
 LOGS=$DOCKERNET_HOME/logs
 UPGRADES=$DOCKERNET_HOME/upgrades
@@ -87,11 +89,6 @@ MICRO_DENOM_UNITS="${!MICRO_DENOM_UNITS_VAR_NAME:-000000}"
 VAL_TOKENS=${VAL_TOKENS}${MICRO_DENOM_UNITS}
 STAKE_TOKENS=${STAKE_TOKENS}${MICRO_DENOM_UNITS}
 
-
-# Dev funding
-DEV_ADDR_1="stride1j7uu8nqc9vdstnd3wj0nuasddv90z5ejnucq0k"
-DEV_ADDRS=("$DEV_ADDR_1")
-
 DEV_AMOUNT=50000000
 DEV_AMOUNT=${DEV_AMOUNT}${MICRO_DENOM_UNITS}
 
@@ -152,7 +149,7 @@ $cmd add-genesis-account ${val_addr} ${VAL_TOKENS}${DENOM}
 
 # add dev addresses
 # iterate over dev addresses
-for dev_addr in "${DEV_ADDRS[@]}"; do
+for dev_addr in "${STRIDE_ADDRS[@]}"; do
     $cmd add-genesis-account ${dev_addr} ${DEV_AMOUNT}${DENOM}
 done
 

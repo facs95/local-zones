@@ -22,6 +22,7 @@ COPY --from=builder /go/src/github.com/Stride-Labs/stride/build/strided .
 RUN apt update -y && apt install jq bc -y
 
 COPY stride/init.sh .
+COPY config.sh .
 RUN chmod +x *.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]

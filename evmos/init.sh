@@ -4,6 +4,9 @@ set -eu
 # get current directory
 DOCKERNET_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+source $DOCKERNET_HOME/config.sh
+
+
 STATE=$DOCKERNET_HOME/state
 LOGS=$DOCKERNET_HOME/logs
 UPGRADES=$DOCKERNET_HOME/upgrades
@@ -147,7 +150,7 @@ $cmd add-genesis-account ${val_addr} ${VAL_TOKENS}${DENOM}
 
 # add dev addresses
 # iterate over dev addresses
-for dev_addr in "${DEV_ADDRS[@]}"; do
+for dev_addr in "${EVMOS_ADDRS[@]}"; do
     $cmd add-genesis-account ${dev_addr} ${DEV_AMOUNT}${DENOM}
 done
 
