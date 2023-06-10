@@ -54,14 +54,17 @@ rpc_addr = 'http://stride:26657'
 grpc_addr = 'http://stride:9090'
 websocket_addr = 'ws://stride:26657/websocket'
 rpc_timeout = '10s'
-account_prefix = 'ustrd'
-key_name = 'mykey'
+account_prefix = 'stride'
+key_name = 'stride-relayer'
 store_prefix = 'ibc'
-default_gas = 100000
-max_gas = 3000000
-gas_price = { price = 0.0001, denom = 'aevmos' }
-clock_drift = '15s'
+default_gas = 5000000
+max_gas = 15000000
+gas_price = { price = 0.0026, denom = 'ustrd' }
+gas_multiplier = 1.1
+max_msg_num = 20
+max_tx_size = 209715
+clock_drift = '20s'
 max_block_time = '10s'
-trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+
 

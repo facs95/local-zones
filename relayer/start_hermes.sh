@@ -2,7 +2,6 @@
 DOCKERNET_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 RELAYER_CONFIG=$DOCKERNET_HOME/hermes_config.toml
 
-
 LOGS=$DOCKERNET_HOME/logs
 CHANNEL_LOGS=$LOGS/channel.log
 KEYS_lOGS=$LOGS/keys.log
@@ -17,7 +16,7 @@ STRIDE_CHAINID="stride-1"
 
 # import evmos account
 hermes --config $RELAYER_CONFIG keys add --hd-path "m/44'/60'/0'/0/0" --mnemonic-file /root/mnemonic --chain $EVMOS_CHAINID >> $KEYS_lOGS 2>&1
-# import osmosis account
+# import stride account
 hermes --config $RELAYER_CONFIG keys add --mnemonic-file /root/mnemonic --chain $STRIDE_CHAINID >> $KEYS_lOGS 2>&1
 
 # channel EVMOS - OSMOSIS
