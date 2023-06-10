@@ -8,11 +8,10 @@ services:
       dockerfile: evmos/Dockerfile
       args:
         commit_hash: v11.0.2
-        repo: "evmos"
     image: "local-zones/evmos:latest"
     hostname: evmosd
     ports:
-      - "26656-26657:26656-26657"
+      - "26657:26657"
       - "9090:9090"
       - "1317:1317"
       - "8545:8545"
@@ -38,7 +37,7 @@ services:
       localnet:
         ipv4_address: 172.16.99.3
     ports:
-      - "26658-26659:26656-26657"
+      - "26659:26657"
       - "9091:9090"
       - "1318:1317"
     command: ./init.sh
@@ -48,21 +47,21 @@ services:
       timeout: 10s
       retries: 5
   relayer:
-      container_name: relayer
-      image: "local-zones/relayer:latest"
-      hostname: relayer
-      networks:
-        localnet:
-          ipv4_address: 172.16.99.5
-      build:
-        context: .
-        dockerfile: relayer/Dockerfile
-        args:
-          commit_hash: v1.5.1
-      depends_on:
-        - evmos
-        - stride
-      command: bash -c "/root/wait && /root/start_hermes.sh"
+    container_name: relayer
+    image: "local-zones/relayer:latest"
+    hostname: relayer
+    networks:
+      localnet:
+        ipv4_address: 172.16.99.5
+    build:
+      context: .
+      dockerfile: relayer/Dockerfile
+      args:
+        commit_hash: v1.5.1
+    depends_on:
+      - evmos
+      - stride
+    command: bash -c "/root/wait && /root/start_hermes.sh"
 networks:
   localnet:
     driver: bridge

@@ -22,7 +22,7 @@ CHAIN="stride"
 STRD_DENOM="ustrd"
 # set denom based on chain
 # Config
-STRIDE_CHAIN_ID=STRIDE
+STRIDE_CHAIN_ID=stride-1
 STRIDE_NODE_PREFIX=stride
 STRIDE_VAL_PREFIX=val
 STRIDE_ADDRESS_PREFIX=stride
@@ -87,6 +87,16 @@ MICRO_DENOM_UNITS="${!MICRO_DENOM_UNITS_VAR_NAME:-000000}"
 VAL_TOKENS=${VAL_TOKENS}${MICRO_DENOM_UNITS}
 STAKE_TOKENS=${STAKE_TOKENS}${MICRO_DENOM_UNITS}
 
+
+# Dev funding
+DEV_ADDR_1="stride1j7uu8nqc9vdstnd3wj0nuasddv90z5ejnucq0k"
+DEV_ADDRS=("$DEV_ADDR_1")
+
+DEV_AMOUNT=5000000
+DEV_AMOUNT=${DEV_AMOUNT}${MICRO_DENOM_UNITS}
+
+
+
 cmd="$STRIDE_BINARY --home ${STATE}/$node_name"
 
 # Moniker is of the form: STRIDE_1
@@ -139,6 +149,13 @@ echo "$val_mnemonic" | $cmd keys add $val_acct --recover --keyring-backend=test 
 val_addr=$($cmd keys show $val_acct --keyring-backend test -a | tr -cd '[:alnum:]._-')
 # Add this account to the current node
 $cmd add-genesis-account ${val_addr} ${VAL_TOKENS}${DENOM}
+
+# add dev addresses
+# iterate over dev addresses
+for dev_addr in "${DEV_ADDRS[@]}"; do
+    $cmd add-genesis-account ${dev_addr} ${DEV_AMOUNT}${DENOM}
+done
+
 # actually set this account as a validator on the current node
 $cmd gentx $val_acct ${STAKE_TOKENS}${DENOM} --chain-id $CHAIN_ID --keyring-backend test >> $SETUP_LOGS 2>&1
 

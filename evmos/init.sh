@@ -1,85 +1,170 @@
 #!/bin/bash
-# if chain not defined, defaults to evmos
-if [[ -z "${CHAIN}" ]]; then CHAIN="evmos"; fi
 
+set -eu
+# get current directory
+DOCKERNET_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+STATE=$DOCKERNET_HOME/state
+LOGS=$DOCKERNET_HOME/logs
+UPGRADES=$DOCKERNET_HOME/upgrades
+SRC=$DOCKERNET_HOME/src
+PEER_PORT=26656
+DOCKER_COMPOSE="docker-compose -f $DOCKERNET_HOME/docker-compose.yml"
+
+
+
+# Logs
+KEYS_LOGS=$DOCKERNET_HOME/logs/keys.log
+SETUP_LOGS=$DOCKERNET_HOME/logs/setup.log
+CHAIN="evmos"
+# DENOMS
+STRD_DENOM="aevmos"
 # set denom based on chain
-if [[ $CHAIN == "evmos" ]]; then DENOM="aevmos"; fi
-if [[ $CHAIN == "ethermint" ]]; then DENOM="aphoton"; fi
+# Config
+EVMOS_CHAIN_ID=evmos_9001-2
+EVMOS_NODE_PREFIX=evmos
+EVMOS_VAL_PREFIX=val
+EVMOS_ADDRESS_PREFIX=evmos
+EVMOS_DENOM=$STRD_DENOM
+EVMOS_RPC_PORT=26657
+EVMOS_ADMIN_ACCT=admin
+EVMOS_ADMIN_ADDRESS=evmos1u20df3trc2c2zdhm8qvh2hdjx9ewh00sv6eyy8
+EVMOS_ADMIN_MNEMONIC="tone cause tribe this switch near host damage idle fragile antique tail soda alien depth write wool they rapid unfold body scan pledge soft"
+EVMOS_FEE_ADDRESS=evmos1czvrk3jkvtj8m27kqsqu2yrkhw3h3ykwj3rxh6
 
-KEY="dev0"
-CHAINID="$CHAIN"_9000-1
-CHAIND="$CHAIN"d
-MONIKER="mymoniker"
-DATA_DIR=$(mktemp -d -t evmos-datadir.XXXXX)
-MNEMONIC="stumble tilt business detect father ticket major inner awake jeans name vibrant tribe pause crunch sad wine muscle hidden pumpkin inject segment rocket silver"
+VAL_MNEMONIC_1="close soup mirror crew erode defy knock trigger gather eyebrow tent farm gym gloom base lemon sleep weekend rich forget diagram hurt prize fly"
+
+# binaries
+EVMOS_BINARY="$DOCKERNET_HOME/evmosd"
+
+# COIN TYPES
+# Coin types can be found at https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+COSMOS_COIN_TYPE=118
+
+
+# CHAIN PARAMS
+BLOCK_TIME='1s'
+EVMOS_HOUR_EPOCH_DURATION="90s"
+EVMOS_DAY_EPOCH_DURATION="100s"
+EVMOS_EPOCH_EPOCH_DURATION="40s"
+EVMOS_MINT_EPOCH_DURATION="20s"
+HOST_DAY_EPOCH_DURATION="60s"
+HOST_HOUR_EPOCH_DURATION="60s"
+HOST_WEEK_EPOCH_DURATION="60s"
+HOST_MINT_EPOCH_DURATION="60s"
+UNBONDING_TIME="120s"
+MAX_DEPOSIT_PERIOD="30s"
+VOTING_PERIOD="30s"
+INITIAL_ANNUAL_PROVISIONS="10000000000000.000000000000000000"
+
 
 # relayer
-RELAYER_EVMOS_ACCT=rly2
+RELAYER_EVMOS_ACCT=rly7
 RELAYER_EVMOS_MNEMONIC="science depart where tell bus ski laptop follow child bronze rebel recall brief plug razor ship degree labor human series today embody fury harvest"
 
 
-GENESIS=$DATA_DIR/config/genesis.json
-TEMP_GENESIS=$DATA_DIR/config/tmp_genesis.json
-CONFIG=$DATA_DIR/config/config.toml
-APP_CONFIG=$DATA_DIR/config/app.toml
+# Node names will be of the form: "evmos1"
+node_name="${EVMOS_NODE_PREFIX}"
 
-echo "create and add new keys"
-echo $MNEMONIC | ./$CHAIND keys add $KEY --home $DATA_DIR --no-backup --chain-id $CHAINID --keyring-backend test --recover
-echo "init Evmos with moniker=$MONIKER and chain-id=$CHAINID"
-./$CHAIND init $MONIKER --chain-id $CHAINID --home $DATA_DIR
-echo "prepare genesis: Allocate genesis accounts"
-./$CHAIND add-genesis-account \
-"$(./$CHAIND keys show $KEY -a --home $DATA_DIR --keyring-backend test)" 100000000000000000000000000000000$DENOM \
---home $DATA_DIR --keyring-backend test
+# Update node networking configuration
+config_toml="${STATE}/${node_name}/config/config.toml"
+client_toml="${STATE}/${node_name}/config/client.toml"
+app_toml="${STATE}/${node_name}/config/app.toml"
+genesis_json="${STATE}/${node_name}/config/genesis.json"
 
-# Set gas limit in genesis
-cat $GENESIS | jq '.consensus_params["block"]["max_gas"]="10000000"' > $TEMP_GENESIS && mv $TEMP_GENESIS $GENESIS
+DENOM=$EVMOS_DENOM
+CHAIN_ID=$EVMOS_CHAIN_ID
+RPC_PORT=$EVMOS_RPC_PORT
 
-echo "- Set $DENOM as denom"
-sed -i "s/aphoton/$DENOM/g" $GENESIS
-sed -i "s/stake/$DENOM/g" $GENESIS
+# Tokens are denominated in the macro-unit
+# (e.g. 5000000STRD implies 5000000000000ustrd)
+VAL_TOKENS=100000000000000000000000000000000
+STAKE_TOKENS=1000000000000000000
 
-echo "prepare genesis: Sign genesis transaction"
-./$CHAIND gentx $KEY 1000000000000000000$DENOM --keyring-backend test --home $DATA_DIR --keyring-backend test --chain-id $CHAINID
-echo "prepare genesis: Collect genesis tx"
-./$CHAIND collect-gentxs --home $DATA_DIR
+MICRO_DENOM_UNITS_VAR_NAME=${CHAIN}_MICRO_DENOM_UNITS
+MICRO_DENOM_UNITS="${!MICRO_DENOM_UNITS_VAR_NAME:-000000000000000000}"
+VAL_TOKENS=${VAL_TOKENS}${MICRO_DENOM_UNITS}
+STAKE_TOKENS=${STAKE_TOKENS}${MICRO_DENOM_UNITS}
 
-echo "prepare genesis: Run validate-genesis to ensure everything worked and that the genesis file is setup correctly"
-./$CHAIND validate-genesis --home $DATA_DIR
+# Dev funding
+DEV_ADDR_1="evmos1q7dfkza5zclyjlfu55dcsfd7cvqtjmh97eudnm"
+DEV_ADDRS=("$DEV_ADDR_1")
+
+DEV_AMOUNT=5000000
+DEV_AMOUNT=${DEV_AMOUNT}${MICRO_DENOM_UNITS}
+
+
+cmd="$EVMOS_BINARY --home ${STATE}/$node_name"
+
+# Moniker is of the form: EVMOS_1
+moniker=$(printf "${EVMOS_NODE_PREFIX}" | awk '{ print toupper($0) }')
+
+# Clean from previous run
+rm -rf $STATE/$node_name
+rm -rf $LOGS/*
+
+mkdir -p $LOGS
+
+# Create a state directory for the current node and initialize the chain
+mkdir -p $STATE/$node_name
+
+$cmd init $moniker --chain-id $CHAIN_ID --overwrite >> $SETUP_LOGS
+chmod -R 777 $STATE/$node_name
+
+sed -i -E "s|cors_allowed_origins = \[\]|cors_allowed_origins = [\"\*\"]|g" $config_toml
+sed -i -E "s|127.0.0.1|0.0.0.0|g" $config_toml
+sed -i -E "s|timeout_commit = \"5s\"|timeout_commit = \"${BLOCK_TIME}\"|g" $config_toml
+sed -i -E "s|prometheus = false|prometheus = true|g" $config_toml
+
+sed -i -E "s|minimum-gas-prices = \".*\"|minimum-gas-prices = \"0${DENOM}\"|g" $app_toml
+sed -i -E '/\[api\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
+sed -i -E 's|unsafe-cors = .*|unsafe-cors = true|g' $app_toml
+sed -i -E "s|snapshot-interval = 0|snapshot-interval = 300|g" $app_toml
+
+sed -i -E "s|chain-id = \"\"|chain-id = \"${CHAIN_ID}\"|g" $client_toml
+sed -i -E "s|keyring-backend = \"os\"|keyring-backend = \"test\"|g" $client_toml
+sed -i -E "s|node = \".*\"|node = \"tcp://localhost:$RPC_PORT\"|g" $client_toml
+
+sed -i -E "s|\"stake\"|\"${DENOM}\"|g" $genesis_json
+sed -i -E "s|\"aphoton\"|\"${DENOM}\"|g" $genesis_json # ethermint default
 
 RELAYER_ACCT=$RELAYER_EVMOS_ACCT
 RELAYER_MNEMONIC=$RELAYER_EVMOS_MNEMONIC
 
-echo "$RELAYER_MNEMONIC" | ./$CHAIND --home $DATA_DIR keys add $RELAYER_ACCT --keyring-backend=test
-RELAYER_ADDRESS=$(./$CHAIND --home $DATA_DIR keys show $RELAYER_ACCT --keyring-backend test -a)
-./$CHAIND --home $DATA_DIR add-genesis-account ${RELAYER_ADDRESS} 100000000000000000000000000000000$DENOM
+echo "$RELAYER_MNEMONIC" | $cmd keys add $RELAYER_ACCT --recover --keyring-backend=test >> $KEYS_LOGS 2>&1
+RELAYER_ADDRESS=$($cmd keys show $RELAYER_ACCT --keyring-backend test -a)
+$cmd add-genesis-account ${RELAYER_ADDRESS} ${VAL_TOKENS}${DENOM}
 
-sed -i 's/prometheus = false/prometheus = true/g' $CONFIG
-sed -i 's/enable-indexer = false/enable-indexer = true/g' $APP_CONFIG
-perl -i -0pe 's/# Enable defines if the API server should be enabled.\nenable = false/# Enable defines if the API server should be enabled.\nenable = true/' $APP_CONFIG
-# Change to 1s to have the same default configuration as v9
-sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' "$CONFIG"
+# add a validator account
+VAL_PREFIX="${EVMOS_VAL_PREFIX}"
 
-# Change proposal periods to pass within a reasonable time for local testing
-sed -i.bak 's/"max_deposit_period": "172800s"/"max_deposit_period": "30s"/g' "$GENESIS"
-sed -i.bak 's/"voting_period": "172800s"/"voting_period": "30s"/g' "$GENESIS"
+val_acct="${VAL_PREFIX}"
+val_mnemonic="${VAL_MNEMONIC_1}"
+echo "$val_mnemonic" | $cmd keys add $val_acct --recover --keyring-backend=test >> $KEYS_LOGS 2>&1
+val_addr=$($cmd keys show $val_acct --keyring-backend test -a | tr -cd '[:alnum:]._-')
+# Add this account to the current node
+$cmd add-genesis-account ${val_addr} ${VAL_TOKENS}${DENOM}
 
-# Change max_subscription to for bots workers
-sed -i.bak 's/max_subscriptions_per_client = 5/max_subscriptions_per_client = 500/g' "$CONFIG"
+# add dev addresses
+# iterate over dev addresses
+for dev_addr in "${DEV_ADDRS[@]}"; do
+    $cmd add-genesis-account ${dev_addr} ${DEV_AMOUNT}${DENOM}
+done
 
-# set custom pruning settings
-sed -i.bak 's/pruning = "default"/pruning = "custom"/g' "$APP_CONFIG"
-sed -i.bak 's/pruning-keep-recent = "0"/pruning-keep-recent = "2"/g' "$APP_CONFIG"
-sed -i.bak 's/pruning-interval = "0"/pruning-interval = "10"/g' "$APP_CONFIG"
+# actually set this account as a validator on the current node
+$cmd gentx $val_acct ${STAKE_TOKENS}${DENOM} --chain-id $CHAIN_ID --keyring-backend test >> $SETUP_LOGS 2>&1
 
-# Make sure localhost is always 0.0.0.0 to make it work on docker network
-sed -i 's/pprof_laddr = "localhost:6060"/pprof_laddr = "0.0.0.0:6060"/g' $CONFIG
-sed -i 's/127.0.0.1/0.0.0.0/g' $APP_CONFIG
+# Cleanup from seds
+rm -rf ${client_toml}-E
+rm -rf ${genesis_json}-E
+rm -rf ${app_toml}-E
 
-echo "running evmos with extra flags $EXTRA_FLAGS"
+# Cleanup from seds
+rm -rf ${config_toml}-E
+rm -rf ${genesis_json}-E
 
-echo "starting evmos node $i in background ..."
-./$CHAIND start --pruning=nothing --rpc.unsafe \
---keyring-backend test --home $DATA_DIR \
->$DATA_DIR/node.log $EXTRA_FLAGS
 
+$cmd collect-gentxs &> /dev/null
+$cmd validate-genesis &> /dev/null
+
+$cmd start

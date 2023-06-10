@@ -31,10 +31,10 @@ host = '127.0.0.1'
 port = 3001
 
 [[chains]]
-id = 'evmos_9001-1'
-rpc_addr = 'http://172.16.99.4:26657'
-grpc_addr = 'http://172.16.99.4:9090'
-websocket_addr = 'ws://172.16.99.4:26657/websocket'
+id = 'evmos_9001-2'
+rpc_addr = 'http://evmos:26657'
+grpc_addr = 'http://evmos:9090'
+websocket_addr = 'ws://evmos:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'evmos'
 key_name = 'mykey'
@@ -49,10 +49,10 @@ trust_threshold = { numerator = '1', denominator = '3' }
 address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
 
 [[chains]]
-id = 'STRIDE'
-rpc_addr = 'http://172.16.99.3:26657'
-grpc_addr = 'http://172.16.99.3:9090'
-websocket_addr = 'ws://172.16.99.3:26657/websocket'
+id = 'stride-1'
+rpc_addr = 'http://stride:26657'
+grpc_addr = 'http://stride:9090'
+websocket_addr = 'ws://stride:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'ustrd'
 key_name = 'mykey'
