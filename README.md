@@ -10,7 +10,6 @@ In order to interact with it you can use the following commands:
 
 `strided q bank balances stride1j7uu8nqc9vdstnd3wj0nuasddv90z5ejnucq0k --node http://localhost:26659`
 
-
 ## Ports
 
 ### Stride
