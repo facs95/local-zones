@@ -12,13 +12,13 @@ In order to add accounts to the genesis file of each chain for them to be funded
 
 In order to interact with it you can use the following commands:
 
-`strided q bank balances stride1j7uu8nqc9vdstnd3wj0nuasddv90z5ejnucq0k --node http://localhost:26659`
+`strided q bank balances stride1j7uu8nqc9vdstnd3wj0nuasddv90z5ejnucq0k --node http://localhost:26658`
 
 ## Ports
 
 ### Stride
 
-- Tendermint RPC: 26659
+- Tendermint RPC: 26658
 - REST server: 1318
 
 ### Evmos

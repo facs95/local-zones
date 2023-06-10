@@ -37,7 +37,7 @@ services:
       localnet:
         ipv4_address: 172.16.99.3
     ports:
-      - "26659:26657"
+      - "26658:26657"
       - "9091:9090"
       - "1318:1317"
     command: ./init.sh
