@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: evmos/Dockerfile
       args:
-        commit_hash: v11.0.2
+        commit_hash: main
     image: "local-zones/evmos:latest"
     hostname: evmosd
     ports:
@@ -30,7 +30,7 @@ services:
       context: .
       dockerfile: stride/Dockerfile
       args:
-        commit_hash: v9.1.1
+        commit_hash: v11.0.0
     image: "local-zones/stride:latest"
     hostname: strided
     networks:
@@ -40,6 +40,7 @@ services:
       - "26658:26657"
       - "9091:9090"
       - "1318:1317"
+      - "444:443"
     command: ./init.sh
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:26657/status"]
@@ -57,7 +58,7 @@ services:
       context: .
       dockerfile: relayer/Dockerfile
       args:
-        commit_hash: v1.5.1
+        commit_hash: v1.6.0
     depends_on:
       - evmos
       - stride
@@ -70,4 +71,3 @@ networks:
       config:
         - subnet: 172.16.99.0/24
           gateway: 172.16.99.1
-

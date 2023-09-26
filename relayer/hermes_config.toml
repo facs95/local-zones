@@ -34,7 +34,7 @@ port = 3001
 id = 'evmos_9001-2'
 rpc_addr = 'http://evmos:26657'
 grpc_addr = 'http://evmos:9090'
-websocket_addr = 'ws://evmos:26657/websocket'
+event_source = { mode = 'pull', interval = '1s' }
 rpc_timeout = '10s'
 account_prefix = 'evmos'
 key_name = 'mykey'
@@ -52,7 +52,7 @@ address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.
 id = 'stride-1'
 rpc_addr = 'http://stride:26657'
 grpc_addr = 'http://stride:9090'
-websocket_addr = 'ws://stride:26657/websocket'
+event_source = { mode = 'pull', interval = '1s' }
 rpc_timeout = '10s'
 account_prefix = 'stride'
 key_name = 'stride-relayer'

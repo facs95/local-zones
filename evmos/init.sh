@@ -116,6 +116,7 @@ chmod -R 777 $STATE/$node_name
 
 sed -i -E "s|cors_allowed_origins = \[\]|cors_allowed_origins = [\"\*\"]|g" $config_toml
 sed -i -E "s|127.0.0.1|0.0.0.0|g" $config_toml
+sed -i.bak 's/localhost/0.0.0.0/g' $app_toml
 sed -i -E "s|timeout_commit = \"5s\"|timeout_commit = \"${BLOCK_TIME}\"|g" $config_toml
 sed -i -E "s|prometheus = false|prometheus = true|g" $config_toml
 
@@ -123,6 +124,9 @@ sed -i -E "s|minimum-gas-prices = \".*\"|minimum-gas-prices = \"0${DENOM}\"|g" $
 sed -i -E '/\[api\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
 sed -i -E 's|unsafe-cors = .*|unsafe-cors = true|g' $app_toml
 sed -i -E "s|snapshot-interval = 0|snapshot-interval = 300|g" $app_toml
+sed -i -E "s|enabled = false|enabled = true|g" $app_toml
+sed -i -E "s|enable = false|enable = true|g" $app_toml
+
 
 sed -i -E "s|chain-id = \"\"|chain-id = \"${CHAIN_ID}\"|g" $client_toml
 sed -i -E "s|keyring-backend = \"os\"|keyring-backend = \"test\"|g" $client_toml
@@ -130,6 +134,7 @@ sed -i -E "s|node = \".*\"|node = \"tcp://localhost:$RPC_PORT\"|g" $client_toml
 
 sed -i -E "s|\"stake\"|\"${DENOM}\"|g" $genesis_json
 sed -i -E "s|\"aphoton\"|\"${DENOM}\"|g" $genesis_json # ethermint default
+
 
 RELAYER_ACCT=$RELAYER_EVMOS_ACCT
 RELAYER_MNEMONIC=$RELAYER_EVMOS_MNEMONIC
@@ -170,4 +175,4 @@ rm -rf ${genesis_json}-E
 $cmd collect-gentxs &> /dev/null
 $cmd validate-genesis &> /dev/null
 
-$cmd start
+$cmd start --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable --grpc.enable

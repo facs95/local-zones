@@ -115,6 +115,7 @@ chmod -R 777 $STATE/$node_name
 
 sed -i -E "s|cors_allowed_origins = \[\]|cors_allowed_origins = [\"\*\"]|g" $config_toml
 sed -i -E "s|127.0.0.1|0.0.0.0|g" $config_toml
+sed -i.bak 's/localhost/0.0.0.0/g' $app_toml
 sed -i -E "s|timeout_commit = \"5s\"|timeout_commit = \"${BLOCK_TIME}\"|g" $config_toml
 sed -i -E "s|prometheus = false|prometheus = true|g" $config_toml
 
