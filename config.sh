@@ -12,6 +12,3 @@ STRIDE_ADDR_2="stride1affmw6ua3940ezscnr8fy0kzsqepkqaj9rp4de"
 STRIDE_ADDR_3="stride1f2nnck2hyejktv820xxnfngknsq8kuwmp3a5vj"
 STRIDE_ADDR_4="stride1hlp9aum8fj7f6d8q98rk0en5cpc52skpwahp9q"
 STRIDE_ADDRS=("$STRIDE_ADDR_1" "$STRIDE_ADDR_2" "$STRIDE_ADDR_3" "$STRIDE_ADDR_4")
-
-
-

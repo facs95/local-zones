@@ -131,6 +131,14 @@ sed -i -E "s|node = \".*\"|node = \"tcp://localhost:$RPC_PORT\"|g" $client_toml
 sed -i -E "s|\"stake\"|\"${DENOM}\"|g" $genesis_json
 sed -i -E "s|\"aphoton\"|\"${DENOM}\"|g" $genesis_json # ethermint default
 
+# make sure the localhost IP is 0.0.0.0
+sed -i -E "s|127.0.0.1|0.0.0.0|g" $config_toml
+sed -i.bak 's/localhost/0.0.0.0/g' $app_toml
+sed -i.bak 's/localhost/0.0.0.0/g' "$client_toml"
+sed -i.bak 's/localhost/0.0.0.0/g' "$config_toml"
+sed -i.bak 's/localhost/0.0.0.0/g' "$app_toml"
+sed -i.bak 's/127.0.0.1/0.0.0.0/g' "$app_toml"
+
 RELAYER_ACCT=$RELAYER_STRIDE_ACCT
 RELAYER_MNEMONIC=$RELAYER_STRIDE_MNEMONIC
 

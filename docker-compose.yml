@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: evmos/Dockerfile
       args:
-        commit_hash: main
+        commit_hash: v14.1.0
     image: "local-zones/evmos:latest"
     hostname: evmosd
     ports:
@@ -60,8 +60,10 @@ services:
       args:
         commit_hash: v1.6.0
     depends_on:
-      - evmos
-      - stride
+      evmos:
+        condition: service_healthy
+      stride:
+        condition: service_healthy
     command: bash -c "/root/wait && /root/start_hermes.sh"
 networks:
   localnet:

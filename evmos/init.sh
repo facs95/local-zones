@@ -115,17 +115,26 @@ $cmd init $moniker --chain-id $CHAIN_ID --overwrite >> $SETUP_LOGS
 chmod -R 777 $STATE/$node_name
 
 sed -i -E "s|cors_allowed_origins = \[\]|cors_allowed_origins = [\"\*\"]|g" $config_toml
-sed -i -E "s|127.0.0.1|0.0.0.0|g" $config_toml
-sed -i.bak 's/localhost/0.0.0.0/g' $app_toml
 sed -i -E "s|timeout_commit = \"5s\"|timeout_commit = \"${BLOCK_TIME}\"|g" $config_toml
 sed -i -E "s|prometheus = false|prometheus = true|g" $config_toml
 
 sed -i -E "s|minimum-gas-prices = \".*\"|minimum-gas-prices = \"0${DENOM}\"|g" $app_toml
-sed -i -E '/\[api\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
 sed -i -E 's|unsafe-cors = .*|unsafe-cors = true|g' $app_toml
 sed -i -E "s|snapshot-interval = 0|snapshot-interval = 300|g" $app_toml
-sed -i -E "s|enabled = false|enabled = true|g" $app_toml
-sed -i -E "s|enable = false|enable = true|g" $app_toml
+
+# Enable APIs
+sed -i -E '/\[api\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
+sed -i -E '/\[grpc\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
+sed -i -E '/\[grpc-web\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
+sed -i -E '/\[json-rpc\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $app_toml
+
+# make sure the localhost IP is 0.0.0.0
+sed -i -E "s|127.0.0.1|0.0.0.0|g" $config_toml
+sed -i.bak 's/localhost/0.0.0.0/g' $app_toml
+sed -i.bak 's/localhost/0.0.0.0/g' "$client_toml"
+sed -i.bak 's/localhost/0.0.0.0/g' "$config_toml"
+sed -i.bak 's/localhost/0.0.0.0/g' "$app_toml"
+sed -i.bak 's/127.0.0.1/0.0.0.0/g' "$app_toml"
 
 
 sed -i -E "s|chain-id = \"\"|chain-id = \"${CHAIN_ID}\"|g" $client_toml
